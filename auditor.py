@@ -1,7 +1,9 @@
+# Imports: sys gives access to the filename typed after the script name (sys.argv) and to sys.exit().
 import sys
 
 
-# PARSER for auditor
+# PARSER: reads the config file line by line, skips blank lines and # comments,
+# splits each remaining line into a name and a value, and returns them as a {name: value} dictionary.
 def parse_config(path):
     settings = {}
     with open(path, 'r') as f:
@@ -15,6 +17,8 @@ def parse_config(path):
     return settings
 
 
+# RULES: the checklist. Each rule is (setting name, test that returns True when the value is bad, severity, message).
+# Most tests flag any value that is not "no"; MaxAuthTries converts the text to a number and flags anything above 4.
 RULES = [
     ("PermitRootLogin", lambda v: v.lower() != "no", "HIGH", "Root login allowed over SSH"),
     ("PermitEmptyPasswords", lambda v: v.lower() != "no", "HIGH", "Empty passwords allowed"),
@@ -24,6 +28,8 @@ RULES = [
 ]
 
 
+# AUDIT: walks through every rule and, only when the setting exists in the file and its test says bad,
+# saves a finding; returns the full list after all rules have been checked.
 def audit(settings):
     findings = []
     for name, is_bad, severity, message in RULES:
@@ -32,6 +38,8 @@ def audit(settings):
     return findings
 
 
+# MAIN: checks that a filename was given, prints the raw file, runs the parser and audit,
+# then prints either "No findings found" or one line per finding plus a total count.
 def main():
     if len(sys.argv) != 2:
         print("Usage: auditor.py <config file>")
@@ -53,5 +61,6 @@ def main():
     print(f"{len(findings)} findings found")
 
 
+# ENTRY POINT: runs main() only when this file is run directly, not when it is imported by another file.
 if __name__ == "__main__":
     main()
