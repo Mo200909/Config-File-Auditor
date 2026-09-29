@@ -60,19 +60,28 @@ No findings found
 ```
 
 ## Known limitations
+### Tested
 
-Tested:
+The following limitations were reproduced through local testing with separate edge-case configuration files:
 
 - A non-numeric `MaxAuthTries` crashes the script:
   `ValueError: invalid literal for int() with base 10: 'abc'` (reproduced with `edgetest.conf`).
 
-Found by reading the code, not yet tested:
+- A setting missing from the file passes silently. For example, a file containing only `Port 22` produces no finding for the monitored settings.
 
-- A setting missing from the file passes silently. OpenSSH may apply a default that is insecure.
-- Setting names are matched case-sensitively, but OpenSSH keywords are case-insensitive.
-- If a setting appears twice, the parser keeps the last value. OpenSSH uses the first.
-- Inline comments (`PermitRootLogin no # note`) are read as part of the value and cause a false finding.
-- `Match` blocks are not handled.
+- Setting names are matched case-sensitively. For example, `permitrootlogin yes` is not recognized as `PermitRootLogin`.
+
+- If a setting appears twice, the parser keeps the last value encountered. For example, `PermitRootLogin no` followed by `PermitRootLogin yes` produces a finding for `yes`.
+
+- Inline comments are treated as part of the value. For example, `PermitRootLogin no # keep off` is interpreted as the value `no # keep off` and produces a false finding.
+
+- `Match` blocks are not handled separately. A setting inside a `Match` block is parsed and evaluated as though it were a global setting.
+
+These tests document the current behavior of the parser and are not intended to represent a fully standards-compliant OpenSSH configuration parser.
+
+## Build note
+
+Built following an AI-generated step-by-step walkthrough, then run and tested by me against the good, bad, and edge-case configs above. The rules and parser have not been extended beyond that walkthrough.
 
 ## Build note
 
