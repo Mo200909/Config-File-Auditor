@@ -83,6 +83,3 @@ These tests document the current behavior of the parser and are not intended to 
 
 Built following an AI-generated step-by-step walkthrough, then run and tested by me against the good, bad, and edge-case configs above. The rules and parser have not been extended beyond that walkthrough.
 
-## Build note
-
-Built following an AI-generated step-by-step walkthrough, then run and tested by me against the good, bad, and edge-case configs above. The rules and parser have not been extended beyond that walkthrough.
